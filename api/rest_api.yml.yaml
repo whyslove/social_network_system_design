@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  title: Travel Blog API
+  version: 1.0.0
+  description: API для публикации постов из путешествий, оценки и комментарии постов других путешественников, подписка на других путешественников, поиск популярных мест и общение в личных сообщениях.
+servers:
+  - url: http://my-travel.com/v1
+    description: Основной сервер API
+paths:
+  /posts:
+    get:
+      summary: Получение списка постов
+      responses:
+        '200':
+          description: Успешное получение списка постов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Публикация нового поста
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '201':
+          description: Пост успешно создан
+  /posts/{postId}:
+    get:
+      summary: Получение информации о посте
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение информации о посте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    put:
+      summary: Обновление поста
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '200':
+          description: Пост успешно обновлен
+    delete:
+      summary: Удаление поста
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Пост успешно удален
+  /posts/{postId}/comments:
+    get:
+      summary: Получение комментариев к посту
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+    post:
+      summary: Добавление комментария к посту
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewComment'
+      responses:
+        '201':
+          description: Комментарий успешно добавлен
+  /users/{userId}/follow:
+    post:
+      summary: Подписка на пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешная подписка на пользователя
+  /users/{userId}/unfollow:
+    post:
+      summary: Отписка от пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешная отписка от пользователя
+  /users/{userId}/messages:
+    get:
+      summary: Получение сообщений пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение сообщений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+    post:
+      summary: Отправка сообщения пользователю
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMessage'
+      responses:
+        '201':
+          description: Сообщение успешно отправлено
+  /feed:
+    get:
+      summary: Получение ленты постов
+      responses:
+        '200':
+          description: Успешное получение ленты постов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /top-places:
+    get:
+      summary: Получение ТОПа мест по странам и городам
+      responses:
+        '200':
+          description: Успешное получение ТОПа мест
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+  /attachments:
+    post:
+      summary: Загрузка нового файла и получение его уникальной ссылки
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Объект Attach успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attach'
+                
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewPost:
+      type: object
+      properties:
+        userId:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        postId:
+          type: string
+        userId:
+          type: string
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        repliedTo:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewComment:
+      type: object
+      properties:
+        userId:
+          type: string
+        comment:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        senderId:
+          type: string
+        receiverId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewMessage:
+      type: object
+      properties:
+        senderId:
+          type: string
+        text:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    Place:
+      type: object
+      properties:
+        country:
+          type: string
+        city:
+          type: string
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    Attach:
+      type: object
+      properties:
+        link:
+          type: string
+          description: Ссылка на вложение
+          example: "https://example.com/image.jpg"
+          
