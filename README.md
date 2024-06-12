@@ -12,8 +12,8 @@ Example o the homework for [course by system design](https://balun.courses/cours
 
 ## Non-functional requirements
 - DAU 10_000_000 and later increasing
-- user makes 40 read requests per day
-- user makes 3 write requests per day
+- user makes 40 read requests per day in average
+- user makes 3 write requests per day in average
 - CIS oriented
 
 - has a seasonal load starting from week before and during the first part of long weekends - on New Year's and May holidays. And also has a slight increase in traffic for all summer months 
