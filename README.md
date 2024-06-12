@@ -31,9 +31,9 @@ Example o the homework for [course by system design](https://balun.courses/cours
 
 ## Service load
 
-- RPS (read): 4629
-- RPS (write): 347
+- RPS (read): 4629 (10_000_000 * 40 (ожидаемое количество запросов на чтение) / 86400 (переводим в секунды))
+- RPS (write): 347 (10_000_000 * 3 (ожидаемое количество запросов на комментарии или запись) / 86400 (переводим в секунды))
 - Traffic (read): As we have pics based system, i would assume that medium service resonse size is 120Kb, thus traffic will be 542 Mb/s
 - Traffic (write): As we have one upload picture request among 3 write, i would assume that pic is not compressed so average write request size is 
 1Mb, thus traffic for write will be 1Mb/s
-- Maximum open connections: 1_000_000
+- Maximum open connections: 1_000_000 (dau * 0.1)
