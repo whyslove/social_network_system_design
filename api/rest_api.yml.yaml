@@ -30,50 +30,6 @@ paths:
       responses:
         '201':
           description: Пост успешно создан
-  /posts/{postId}:
-    get:
-      summary: Получение информации о посте
-      parameters:
-        - name: postId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Успешное получение информации о посте
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-    put:
-      summary: Обновление поста
-      parameters:
-        - name: postId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewPost'
-      responses:
-        '200':
-          description: Пост успешно обновлен
-    delete:
-      summary: Удаление поста
-      parameters:
-        - name: postId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Пост успешно удален
   /posts/{postId}/comments:
     get:
       summary: Получение комментариев к посту
