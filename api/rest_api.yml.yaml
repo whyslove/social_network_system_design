@@ -19,6 +19,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
     post:
       summary: Публикация нового поста
       requestBody:
@@ -30,6 +36,12 @@ paths:
       responses:
         '201':
           description: Пост успешно создан
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
   /posts/{postId}/comments:
     get:
       summary: Получение комментариев к посту
@@ -48,6 +60,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Comment'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
     post:
       summary: Добавление комментария к посту
       parameters:
@@ -65,6 +85,14 @@ paths:
       responses:
         '201':
           description: Комментарий успешно добавлен
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
   /users/{userId}/follow:
     post:
       summary: Подписка на пользователя
@@ -77,6 +105,14 @@ paths:
       responses:
         '200':
           description: Успешная подписка на пользователя
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
   /users/{userId}/unfollow:
     post:
       summary: Отписка от пользователя
@@ -89,6 +125,14 @@ paths:
       responses:
         '200':
           description: Успешная отписка от пользователя
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
   /users/{userId}/messages:
     get:
       summary: Получение сообщений пользователя
@@ -107,6 +151,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
     post:
       summary: Отправка сообщения пользователю
       parameters:
@@ -124,6 +176,14 @@ paths:
       responses:
         '201':
           description: Сообщение успешно отправлено
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
   /feed:
     get:
       summary: Получение ленты постов
@@ -136,6 +196,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
   /top-places:
     get:
       summary: Получение ТОПа мест по странам и городам
@@ -148,6 +214,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Place'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
   /attachments:
     post:
       summary: Загрузка нового файла и получение его уникальной ссылки
@@ -168,6 +240,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Attach'
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
                 
 components:
   schemas:
