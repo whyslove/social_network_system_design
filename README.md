@@ -37,3 +37,20 @@ Example o the homework for [course by system design](https://balun.courses/cours
 - Traffic (write): As we have one upload picture request among 3 write, i would assume that pic is not compressed so average write request size is 
 1Mb, thus traffic for write will be 1Mb/s
 - Maximum open connections: 1_000_000 (dau * 0.1)
+
+
+## Disks
+- Total capacity per year: 1Mb/s (Traffic write) * 60 * 60 * 24 * 365 = 30Tb if we does not compress pictures. 
+I assume that we will compress pictures, thus we can decrease total capacity by 80% as i guess that 80% is the average rate
+of compressing random pictures. Thus we have only 6Tb. 
+- IOPS: 4629 + 347 ~= 5000 (from Service Load)
+- Traffic per second: 543 Mb/s (from Service Load)
+
+I assume that if we serve static images, we need to serve them fast as nobody likes sites with long downloading pictures. 
+So as we mostly serve pictures we must use ssd for them. As SSD i will choose SATA as i do not see necessity in small and high-high
+perfomant disks. So let's calculate:
+
+- Disks_for_capacity = 6Tb / 100Tb = 1 
+- Disks_for_throughput = 543 / 500 = 2
+- Disks_for_iops = 5000 / 500 = 50
+- Disks = max(1, 2, 50) = 50
