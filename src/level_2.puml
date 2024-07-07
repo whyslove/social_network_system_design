@@ -1,0 +1,92 @@
+@startuml
+!define C4_CONTAINER
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "User", "A traveller using the social network")
+
+System_Boundary(traveller_social_network, "Traveller Social Network") {
+    Container(nginx, "Nginx Load Balancer", "Distributes incoming traffic to different systems")
+
+    Container_Boundary(attachments_system, "Attachments System") {
+        Container(attachments_service, "Attachments Service", "Handles storage and retrieval of attachments", "S3")
+        ContainerDb(attachments_storage, "Attachments Storage", "S3", "Stores attachments")
+    }
+
+    Container_Boundary(core_system, "Core System") {
+        Container(message_service, "Message Service", "Handles user messages", "PostgreSQL")
+        ContainerDb(message_db, "Messages Database", "PostgreSQL", "Stores messages")
+        
+        Container(top_places_service, "Top Places Service", "Provides top places information", "Redis")
+        ContainerDb(top_places_db, "Top Places Cache", "Redis Cluster", "Stores top places data")
+        Container(top_places_worker, "Top Places Worker", "Updates top places data", "Kafka")
+
+        Container(feed_service, "Feed Service", "Provides user feeds", "Redis, PostgreSQL")
+        ContainerDb(feed_db, "Posts Database", "PostgreSQL", "Stores feed data")
+        Container(feed_worker, "Feed Worker", "Updates feed data", "Kafka, PostgreSQL")
+        
+        Container(places_service, "Places Service", "Provides place information", "Redis")
+        Container(places_worker, "Places Worker", "Updates place data", "Kafka")
+        Container(posts_service, "Posts service", "Get or update post")
+
+        ContainerDb(places_cache, "Places Cache", "Redis cluster", "Stores place information")
+        ContainerDb(feeds_redis, "Feeds Cache", "Redis cluster", "Stores in-memory data")
+
+    }
+}
+
+System_Ext(geo_service, "Geo Service", "Provides geographical information")
+Container_Ext(kafka, "Kafka", "Message Broker", "Handles message streaming")
+Container_Ext(redis, "Redis", "In-Memory Database", "Stores in-memory data")
+
+
+Rel(user, nginx, "Uses")
+Rel(nginx, attachments_service, "For handling attachments")
+Rel(attachments_service, attachments_storage, "Stores and retrieves attachments")
+
+Rel(nginx, message_service, "For handling messages")
+Rel(message_service, message_db, "Reads from and writes to")
+
+Rel(nginx, top_places_service, "For getting top places information")
+Rel(top_places_service, top_places_db, "Reads from")
+
+Rel(top_places_worker, top_places_db, "Updates data to")
+Rel(top_places_worker, feed_db, "Get Posts data from")
+
+
+Rel(nginx, feed_service, "For accessing personal feeds and profile feed")
+Rel(feed_service, feeds_redis, "Try to read from")
+Rel(feed_service, feed_db, "Reads from if not in Redis")
+Rel(feed_worker, feed_db, "Updates data from")
+Rel(feed_worker, feeds_redis, "Updates data to", "Kafka, PostgreSQL")
+
+Rel(nginx, places_service, "For getting place information. In -> id, out -> Full name of place")
+Rel(nginx, posts_service, "For creating or getting posts")
+Rel(posts_service, feed_db, "For creating or getting posts")
+
+Rel(places_service, places_cache, "Reads from")
+
+Rel(places_worker, places_cache, "Updates data to")
+Rel(places_worker, kafka, "Gets updates from")
+Rel(kafka, geo_service, "Connected to external Geo Service")
+
+' Adding styles to the elements
+UpdateElementStyle(nginx, $bgColor="LightSkyBlue", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(attachments_service, $bgColor="LightGreen", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(attachments_storage, $bgColor="LightYellow", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(message_service, $bgColor="LightCoral", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(message_db, $bgColor="LightPink", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(top_places_service, $bgColor="LightGreen", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(top_places_db, $bgColor="LightYellow", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(top_places_worker, $bgColor="LightGray", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(feed_service, $bgColor="LightCoral", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(feed_db, $bgColor="LightPink", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(feed_worker, $bgColor="LightGray", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(places_service, $bgColor="LightBlue", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(places_worker, $bgColor="LightGray", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(places_cache, $bgColor="LightYellow", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(redis, $bgColor="LightYellow", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(kafka, $bgColor="LightGray", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(geo_service, $bgColor="LightBlue", $fontColor="Black", $borderColor="Black")
+@enduml
