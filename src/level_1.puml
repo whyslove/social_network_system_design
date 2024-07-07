@@ -1,0 +1,23 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "User", "A traveller using the social network")
+System(web_app, "Traveller Social Network", "A web service providing social network features for travellers")
+
+System_Ext(auth_service, "Authorization Service", "OAuth2 - provides authorization")
+System_Ext(geo_service, "Geo Service", "Provides geographical information for posts")
+
+Rel(user, web_app, "Uses")
+Rel(user, auth_service, "Authorizates")
+
+Rel(web_app, auth_service, "Uses", "OAuth2 - provides authorization")
+Rel(geo_service, web_app, "Uses", "Provides geographical information")
+
+
+UpdateElementStyle(web_app, $bgColor="LightSkyBlue", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(auth_service, $bgColor="LightYellow", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(geo_service, $bgColor="LightGreen", $fontColor="Black", $borderColor="Black")
+UpdateElementStyle(user, $bgColor="LightCoral", $fontColor="Black", $borderColor="Black")
+@enduml

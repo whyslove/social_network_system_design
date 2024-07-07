@@ -87,3 +87,15 @@ We will have 12 hosts with replications. I think that, considering our load, 9 h
 and 3 hosts (master + 2 slaves) will be allocated for all other data. This will be sufficient to handle load of first year. And when our application
 becomes bigger we simply add new shards without any resharding
 
+
+## C4 Design
+
+### Level 1 System context diagram
+![img1](/img/level_1.png)
+
+### Level 2 System context diagram (assume that all requests are authorized on proxies before nginx)
+![img1](/img/level_2.png)
+
+### P.S. что-то гитлаб шалит с фотками
+1. Если слонить репозиторий, то они должны норм показываться
+2. Если что в src лежит код для puml
