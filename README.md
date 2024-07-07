@@ -95,3 +95,7 @@ becomes bigger we simply add new shards without any resharding
 
 ### Level 2 System context diagram (assume that all requests are authorized on proxies before nginx)
 ![img1](/img/level_2.png)
+
+### P.S. что-то гитлаб шалит с фотками
+1. Если слонить репозиторий, то они должны норм показываться
+2. Если что в src лежит код для puml
