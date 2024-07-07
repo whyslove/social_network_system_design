@@ -31,8 +31,8 @@ Example o the homework for [course by system design](https://balun.courses/cours
 
 ## Service load
 
-- RPS (read): 4629 (10_000_000 * 40 (ожидаемое количество запросов на чтение) / 86400 (переводим в секунды))
-- RPS (write): 347 (10_000_000 * 3 (ожидаемое количество запросов на комментарии или запись) / 86400 (переводим в секунды))
+- RPS (read): 4629 (10,000,000 * 40 (expected number of read requests) / 86400 (converted to seconds))
+- RPS (write): 347 (10,000,000 * 3 (expected number of comment or write requests) / 86400 (converted to seconds))
 - Traffic (read): As we have pics based system, i would assume that medium service resonse size is 120Kb, thus traffic will be 542 Mb/s
 - Traffic (write): As we have one upload picture request among 3 write, i would assume that pic is not compressed so average write request size is 
 1Mb, thus traffic for write will be 1Mb/s
@@ -52,5 +52,38 @@ perfomant disks. So let's calculate:
 
 - Disks_for_capacity = 6Tb / 100Tb = 1 
 - Disks_for_throughput = 543 / 500 = 2
-- Disks_for_iops = 5000 / 500 = 50
-- Disks = max(1, 2, 50) = 50
+- Disks_for_iops = 5000 / 500 = 10
+- Disks = max(1, 2, 10) = 10
+
+## Hosts
+
+I assume that in out service it is crucial to store posts, messages and attachemts in separate databases. We also can store 
+any other Table in separate databases too, but the most crucial part is these three tables. 
+
+We are designing a heavy read system with large amount of data stored as pictures. Main user flow includes reading many posts, so we
+often send \[GET\] /posts reqests that transfer large amount of data in pictures.
+We are CIS oriented as was said in Non-functional requirements so i propose to set 2 data-centers for CDN only for attachments. 
+One in Moscow and one in Novosibirsk. Seems that we will have many pictures in databases, so i would propose the following scheme:
+1. Check the maximum capacity of a single disk and call it one shard.
+2. We will shard attachments based on the post_id they are linked to.
+3. When one of the shards starts to fill up, we will record the range of posts whose attachments are in the first shard.
+4. Introduce the second shard.
+5. And so on.
+
+Yes, we might get different shard ranges, but this is not a big problem and can be handled in many ways.
+
+Obviously, i want to replicate all my databases with replication
+factor of 3 as a way to decrease read load from one host and to be sure we can change master host to almost up-to-date slave host
+in case if one host is down.
+
+We see that we choosed 10 disks because of intensive read operations. Lets say that while scaling with replication factor by 3, we can decrease
+number of disks to 4 (as we does not struugle from many READ requests to one node due to replication)
+
+Thus, using following formulas we get
+- Hosts = disks / disks_per_host = 4 / 1 = 4
+- Hosts_with_replication = hosts * replication_factor = 4 * 3 = 12. 
+
+We will have 12 hosts with replications. I think that, considering our load, 9 hosts will be allocated for storing attachements (photos), 
+and 3 hosts (master + 2 slaves) will be allocated for all other data. This will be sufficient to handle load of first year. And when our application
+becomes bigger we simply add new shards without any resharding
+
